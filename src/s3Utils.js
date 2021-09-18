@@ -15,11 +15,16 @@ const s3Client = new AWS.S3({apiVersion: '2006-03-01'});
 
 
 const createBucket = (bucket, pathPrefix) => {
+	let prefix = (pathPrefix || "").trim();
+	if (prefix.length > 0 && !prefix.endsWith("/")) {
+		prefix = (prefix + "/");
+	}
+
 	return {
 		put: async (data, path) => {
 			var uploadParams = {
 				Bucket: bucket,
-				Key: `${pathPrefix}${path}`,
+				Key: `${prefix}${path}`,
 				Body: data
 			};
 				
@@ -29,7 +34,7 @@ const createBucket = (bucket, pathPrefix) => {
 		get: async (path) => {
 			var getParams = {
 				Bucket: bucket,
-				Key: `${pathPrefix}${path}`,
+				Key: `${prefix}${path}`,
 			};
 				
 			const s3Response = await s3Client.getObject(getParams).promise();
@@ -40,7 +45,7 @@ const createBucket = (bucket, pathPrefix) => {
 		del: async (path) => {
 			var deleteParams = {
 				Bucket: bucket,
-				Key: `${pathPrefix}${path}`,
+				Key: `${prefix}${path}`,
 			};
 				
 			return await s3Client.deleteObject(deleteParams).promise();

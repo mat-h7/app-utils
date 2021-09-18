@@ -8,7 +8,7 @@ const appUtils = require("../index.js");
 const s3Utils = appUtils.s3Utils;
 const utils = appUtils.utils;
 
-const s3Bucket = s3Utils.createBucket("links.rest", "testPrefix");
+const s3Bucket = s3Utils.createBucket("links.rest", "testing/app-utils");
 
 
 let testKey = 'test-data/test2.txt';
