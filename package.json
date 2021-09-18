@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"test-s3": "node ./test/test-s3.js",
-		"test-encryptor": "node ./test/test-encryptor.js"
+		"test-s3": "node --trace-warnings ./test/test-s3.js",
+		"test-encryptor": "node --trace-warnings ./test/test-encryptor.js",
+		"test-mongo": "node --trace-warnings ./test/test-mongo.js"
 	},
 	"repository": {
 		"type": "git",
@@ -18,7 +19,7 @@
 		"debug": "4.3.2",
 		"dotenv": "10.0.0",
 		"luxon": "2.0.2",
-		"mongodb": "4.1.1",
+		"mongodb": "4.1.2",
 		"sharp": "^0.29.1",
 		"simple-git": "2.45.1"
 	},

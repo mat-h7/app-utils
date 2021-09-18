@@ -1,36 +1,31 @@
-var fs = require("fs");
+const fs = require("fs");
 
-process.env.ENCRYPTION_PASSWORD = "abc";
-process.env.PBKDF2_SALT = "abcdeabcdeabcdeabcdeabcdeabcdeab";
-
+process.env.DEBUG="*";
+process.env.AWS_PROFILE_NAME = "links-app";
 
 const appUtils = require("../index.js");
-const s3Utils = appUtils.s3Utils("links.rest", "pathPrefix");
 
+const s3Utils = appUtils.s3Utils;
 const utils = appUtils.utils;
 
+const s3Bucket = s3Utils.createBucket("links.rest", "testPrefix");
 
 
-// Create unique bucket name
-var bucketName = 'links.rest';
-// Create name for uploaded object key
-var keyName = 'test-data/test2.txt';
+let testKey = 'test-data/test2.txt';
 
 
-var buffer = fs.readFileSync("../index.js");
+const buffer = fs.readFileSync("./index.js");
 console.log("buffer.length: " + buffer.length);
 
 (async () => {
 	try {
-		await s3Utils.put(buffer, keyName);
+		await s3Bucket.put(buffer, testKey);
 
-		const getData = await s3Utils.get(keyName);
+		const getData = await s3Bucket.get(testKey);
 
-		console.log("buffer.length(after): " + getData.Body.length);
+		console.log("buffer.length(after): " + getData.length);
 
 	} catch (err) {
-		console.log("ERROR");
-
 		utils.logError("asdfuashdfe3", err);
 	}
 })();

@@ -173,6 +173,8 @@ function logError(errorId, err, optionalUserData = {}, logStacktrace=true) {
 	return returnVal;
 }
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 module.exports = {
 	formatDate: formatDate,
@@ -188,5 +190,6 @@ module.exports = {
 	objectHasProperty: objectHasProperty,
 	sha256: sha256,
 	logError: logError,
-	descBuffer: descBuffer
+	descBuffer: descBuffer,
+	sleep: sleep
 };

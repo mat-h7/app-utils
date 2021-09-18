@@ -14,40 +14,42 @@ debugLog(`Using AWS Access Key: ${AWS.config.credentials.accessKeyId}`);
 const s3Client = new AWS.S3({apiVersion: '2006-03-01'});
 
 
-const s3Utils = (bucket, pathPrefix) => {
-	put: async (data, path) => {
-		var uploadParams = {
-			Bucket: bucket,
-			Key: `${pathPrefix}${path}`,
-			Body: data
-		};
-			
-		await s3Client.putObject(uploadParams).promise();
-	},
+const createBucket = (bucket, pathPrefix) => {
+	return {
+		put: async (data, path) => {
+			var uploadParams = {
+				Bucket: bucket,
+				Key: `${pathPrefix}${path}`,
+				Body: data
+			};
+				
+			await s3Client.putObject(uploadParams).promise();
+		},
 
-	get: async (path) => {
-		var getParams = {
-			Bucket: bucket,
-			Key: `${pathPrefix}${path}`,
-		};
-			
-		return await s3Client.getObject(getParams).promise();
-	},
+		get: async (path) => {
+			var getParams = {
+				Bucket: bucket,
+				Key: `${pathPrefix}${path}`,
+			};
+				
+			const s3Response = await s3Client.getObject(getParams).promise();
 
-	del: async (path) => {
-		var deleteParams = {
-			Bucket: bucket,
-			Key: `${pathPrefix}${path}`,
-		};
-			
-		return await s3Client.deleteObject(deleteParams).promise();
-	}
+			return s3Response.Body;
+		},
+
+		del: async (path) => {
+			var deleteParams = {
+				Bucket: bucket,
+				Key: `${pathPrefix}${path}`,
+			};
+				
+			return await s3Client.deleteObject(deleteParams).promise();
+		}
+	};
 };
 
 
 
-
-
 module.exports = {
-	s3Utils: s3Utils
+	createBucket: createBucket
 };
