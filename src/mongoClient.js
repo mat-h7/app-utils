@@ -35,18 +35,13 @@ const createClient = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSc
 };
 
 const connectToDbAndRefreshSchema = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSchema) => {
-	let usernamePassword = "";
-	if (dbUsername && dbUsername.trim().length > 0) {
-		usernamePassword = `${dbUsername}:${dbPassword}@`;
-	}
+	let authMechanism = "SCRAM-SHA-256";
 
-	let connectionUrl = `mongodb://${usernamePassword}${dbHost}:${dbPort}/?authMechanism=SCRAM-SHA-256`;
+	let usernamePassword = `${encodeURIComponent(dbUsername || "")}:${encodeURIComponent(dbPassword || "")}@`;
 
-	if (dbUsername && dbUsername.trim().length > 0) {
-		connectionParams.auth = { username: dbUsername, password: dbPassword };
-	}
+	let connectionUrl = `mongodb://${usernamePassword}${dbHost}:${dbPort}/?authMechanism=${authMechanism}`;
 
-
+	//debugLog(`Connecting to database: ${connectionUrl}`);
 	debugLog(`Connecting to database: ${dbHost}:${dbPort}`);
 	
 	const client = new MongoClient(connectionUrl);
@@ -67,10 +62,9 @@ const connectToDbAndRefreshSchema = async (dbHost, dbPort, dbUsername, dbPasswor
 	} catch (err) {
 		utils.logError("mongodb.connection-failure", err);
 
-		throw err;
-
-	} finally {
 		await client.close();
+
+		throw err;
 	}
 }
 
@@ -136,32 +130,24 @@ async function _findOne(db, collectionName, query, options={}) {
 }
 
 async function _findMany(db, collectionName, query, options={}, limit=-1, offset=0, returnAsArray=true) {
-	return new Promise((resolve, reject) => {
-		let collection = db.collection(collectionName);
+	let collection = db.collection(collectionName);
 
-		let cursor = collection.find(query, options);
+	let cursor = await collection.find(query, options);
 
-		if (offset > 0) {
-			cursor.skip(offset);
-		}
+	if (offset > 0) {
+		cursor.skip(offset);
+	}
 
-		if (limit > 0) {
-			cursor.limit(limit);
-		}
+	if (limit > 0) {
+		cursor.limit(limit);
+	}
 
-		if (returnAsArray) {
-			cursor.toArray((err, results) => {
-				if (err) {
-					reject(err);
-	
-				} else {
-					resolve(results);
-				}
-			});
-		} else {
-			resolve(cursor);
-		}
-	});
+	if (returnAsArray) {
+		return cursor.toArray();
+
+	} else {
+		return cursor;
+	}
 }
 
 async function _insertOne(db, collectionName, document) {
