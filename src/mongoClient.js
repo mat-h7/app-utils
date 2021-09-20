@@ -49,7 +49,7 @@ const connectToDbAndRefreshSchema = async (dbHost, dbPort, dbUsername, dbPasswor
 
 	debugLog(`Connecting to database: ${dbHost}:${dbPort}`);
 	
-	const client = MongoClient(connectionUrl);
+	const client = new MongoClient(connectionUrl);
 
 	try {
 		await client.connect();
