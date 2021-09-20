@@ -1,12 +1,9 @@
-const mongodb = require("mongodb");
+const { MongoClient } = require("mongodb");
 const debug = require("debug");
 
 const utils = require("./utils.js");
 
 const debugLog = debug("app:db");
-
-const MongoClient = mongodb.MongoClient;
-const MongoObjectID = mongodb.ObjectID;
 
 
 const createClient = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSchema) => {
@@ -37,66 +34,44 @@ const createClient = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSc
 	};
 };
 
-const connectToDbAndRefreshSchema = (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSchema) => {
-	return new Promise((resolve, reject) => {
-		let connectionUrl;
+const connectToDbAndRefreshSchema = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSchema) => {
+	let usernamePassword = "";
+	if (dbUsername && dbUsername.trim().length > 0) {
+		usernamePassword = `${dbUsername}:${dbPassword}@`;
+	}
 
-		let connectionParams = {
-			useUnifiedTopology: true
-		};
+	let connectionUrl = `mongodb://${usernamePassword}${dbHost}:${dbPort}/?authMechanism=SCRAM-SHA-256`;
 
-		connectionUrl = `mongodb://${dbHost}:${dbPort}`;
-
-		if (dbUsername && dbUsername.trim().length > 0) {
-			connectionParams.auth = { username: dbUsername, password: dbPassword };
-		}
+	if (dbUsername && dbUsername.trim().length > 0) {
+		connectionParams.auth = { username: dbUsername, password: dbPassword };
+	}
 
 
-		debugLog(`Connecting to database: ${dbHost}:${dbPort}`);
-		 
-		// Use connect method to connect to the server
-		MongoClient.connect(connectionUrl, connectionParams, (err, client) => {
-			if (err) {
-				debugLog(`Error connecting to DB: ${err}`);
+	debugLog(`Connecting to database: ${dbHost}:${dbPort}`);
+	
+	const client = MongoClient(connectionUrl);
 
-			} else {
-				debugLog(`Success: Connected to database`);
-			}
-		
-			let db = client.db(dbName);
+	try {
+		await client.connect();
 
-			(async() => {
-				try {
-					await setupSchema(db, dbSchema);
+		await client.db("admin").command({ ping: 1 });
 
-					/*const users = await findObjects("users", {username:"admin", roles:"admin"});
-					
-					if (users == null || users.length == 0) {
-						var adminPasswordHash = await passwordUtils.hash(appConfig.db.adminUser.password);
-						await insertObjects("users", [
-							{
-								username:appConfig.db.adminUser.username,
-								passwordHash: adminPasswordHash,
-								roles: ["admin"]
-							}
-						]);
+		debugLog(`Success: Connected to database`);
 
-						debugLog("Admin user created.");
+		let db = client.db(dbName);
 
-					} else {
-						debugLog("Admin user already exists.");
-					}*/
+		await setupSchema(db, dbSchema);
 
-					resolve(db);
+		return db;
 
-				} catch (e) {
-					utils.logError("2038ryegdue", e);
+	} catch (err) {
+		utils.logError("mongodb.connection-failure", err);
 
-					reject(db);
-				}
-			})();
-		});
-	});
+		throw err;
+
+	} finally {
+		await client.close();
+	}
 }
 
 
