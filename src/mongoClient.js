@@ -41,18 +41,21 @@ const connectToDbAndRefreshSchema = (dbHost, dbPort, dbUsername, dbPassword, dbN
 	return new Promise((resolve, reject) => {
 		let connectionUrl;
 
-		if (dbUsername && dbUsername.trim().length > 0) {
-			connectionUrl = `mongodb://${dbUsername}:${dbPassword}@${dbHost}:${dbPort}`;
+		let connectionParams = {
+			useUnifiedTopology: true
+		};
 
-		} else {
-			connectionUrl = `mongodb://${dbHost}:${dbPort}`;
+		connectionUrl = `mongodb://${dbHost}:${dbPort}`;
+
+		if (dbUsername && dbUsername.trim().length > 0) {
+			connectionParams.auth = { username: dbUsername, password: dbPassword };
 		}
 
 
 		debugLog(`Connecting to database: ${dbHost}:${dbPort}`);
 		 
 		// Use connect method to connect to the server
-		MongoClient.connect(connectionUrl, { useUnifiedTopology: true }, (err, client) => {
+		MongoClient.connect(connectionUrl, connectionParams, (err, client) => {
 			if (err) {
 				debugLog(`Error connecting to DB: ${err}`);
 

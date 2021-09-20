@@ -54,7 +54,7 @@ let dbSchema = [
 
 
 (async() => {
-	const db = await mongoClient.createClient(dbHost, dbPort, null, null, dbName, dbSchema);
+	const db = await mongoClient.createClient(dbHost, dbPort, "testAdmin", "test", dbName, dbSchema);
 
 	console.log("deleting just in case");
 	await db.deleteOne("users", {username:"abc"});
