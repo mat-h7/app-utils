@@ -165,6 +165,14 @@ function logError(errorId, err, optionalUserData = {}, logStacktrace=true) {
 		debugErrorVerboseLog("Stack: " + err.stack);
 	}
 
+	if (err.cause) {
+		debugErrorLog("Caused by: " + err.cause);
+
+		if (err.cause.stack && logStacktrace) {
+			debugErrorVerboseLog("Cause Stack: " + err.cause.stack);
+		}
+	}
+
 	var returnVal = {errorId:errorId, error:err};
 	if (optionalUserData) {
 		returnVal.userData = optionalUserData;
