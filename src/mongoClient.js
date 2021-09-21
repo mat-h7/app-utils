@@ -25,6 +25,9 @@ const createClient = async (dbHost, dbPort, dbUsername, dbPassword, dbName, dbSc
 		deleteOne: async (collectionName, query) => {
 			return _deleteOne(db, collectionName, query);
 		},
+		deleteMany: async (collectionName, query) => {
+			return _deleteMany(db, collectionName, query);
+		},
 		getCollection: async (collectionName) => {
 			return _getCollection(db, collectionName);
 		},
@@ -180,13 +183,19 @@ async function _insertMany(db, collectionName, documents) {
 }
 
 async function _deleteOne(db, collectionName, query) {
-	return new Promise(async (resolve, reject) => {
-		let collection = db.collection(collectionName);
+	let collection = db.collection(collectionName);
 
-		const result = await collection.deleteOne(query);
+	const result = await collection.deleteOne(query);
 
-		resolve(result);
-	});
+	return result;
+}
+
+async function _deleteMany(db, collectionName, query) {
+	let collection = db.collection(collectionName);
+
+	const result = await collection.deleteMany(query);
+
+	return result;
 }
 
 async function _getCollection(db, collectionName) {
