@@ -115,7 +115,7 @@ const sha256 = (data) => {
 
 const descBuffer = (buffer) => {
 	let b64 = buffer.toString("base64");
-	return `buffer: ${b64.substring(0, 16)}...${b64.substring(100, 116)}...${b64.substring(b64.length - 16, b64.length)}, sha256: ${sha256(b64).substring(0, 16)}`;
+	return `buffer: ${b64.substring(0, 16)}...${b64.substring(100, 116)}...${b64.substring(b64.length - 16, b64.length)}, sha256: ${sha256(buffer).substring(0, 16)}...`;
 };
 
 
