@@ -25,6 +25,10 @@ console.log("buffer.length: " + buffer.length);
 
 		console.log("buffer.length(after): " + getData.length);
 
+		const deleteResult = s3Bucket.del(testKey);
+
+		console.log("deleteResult: " + JSON.stringify(deleteResult));
+
 	} catch (err) {
 		utils.logError("asdfuashdfe3", err);
 	}

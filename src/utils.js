@@ -113,9 +113,18 @@ const sha256 = (data) => {
 	return crypto.createHash("sha256").update(data).digest("hex");
 };
 
-const descBuffer = (buffer) => {
-	let b64 = buffer.toString("base64");
-	return `buffer: ${b64.substring(0, 16)}...${b64.substring(100, 116)}...${b64.substring(b64.length - 16, b64.length)}, sha256: ${sha256(buffer).substring(0, 16)}...`;
+const descBuffer = (buffer, format="base64", fullDetail=false) => {
+	let formatted = buffer.toString(format);
+	
+	if (fullDetail) {
+		return {
+			length: buffer.length,
+			sha256: sha256(buffer).substring(0, 16) + "...",
+			data: `${formatted.substring(0, 16)}...${formatted.substring(100, 116)}...${formatted.substring(formatted.length - 16, formatted.length)}`
+		};
+	} else {
+		return `buffer: len=${buffer.length.toLocaleString()}, ${formatted.substring(0, 16)}...${formatted.substring(100, 116)}...${formatted.substring(formatted.length - 16, formatted.length)}, sha256: ${sha256(buffer).substring(0, 16)}...`;
+	}
 };
 
 
