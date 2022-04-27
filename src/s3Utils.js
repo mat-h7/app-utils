@@ -36,10 +36,20 @@ const createBucket = (bucket, pathPrefix) => {
 				Bucket: bucket,
 				Key: `${prefix}${path}`,
 			};
-				
-			const s3Response = await s3Client.getObject(getParams).promise();
+			
+			try {
+				const s3Response = await s3Client.getObject(getParams).promise();
 
-			return s3Response.Body;
+				return s3Response.Body;
+
+			} catch (e) {
+				if (e.code == "NoSuchKey") {
+					return null;
+
+				} else {
+					throw e;
+				}
+			}
 		},
 
 		del: async (path) => {
