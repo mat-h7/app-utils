@@ -21,13 +21,12 @@ const createBucket = (bucket, pathPrefix) => {
 	}
 
 	return {
-		put: async (data, path, contentType="application/octet-stream") => {
-			var uploadParams = {
-				Bucket: bucket,
-				Key: `${prefix}${path}`,
-				Body: data,
-				ContentType: contentType
-			};
+		put: async (data, path, options={}) => {
+			let uploadParams = options || {};
+
+			uploadParams.Bucket = bucket;
+			uploadParams.Key = `${prefix}${path}`;
+			uploadParams.Body = data;
 				
 			await s3Client.putObject(uploadParams).promise();
 		},
