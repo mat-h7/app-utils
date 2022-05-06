@@ -192,7 +192,7 @@ function logError(errorId, err, optionalUserData = {}, logStacktrace=true) {
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const pluralize (str, num) => { return (str + (num == 1 ? "" : "s")); }
+const pluralize = (str, num) => { return (str + (num == 1 ? "" : "s")); }
 
 
 module.exports = {
